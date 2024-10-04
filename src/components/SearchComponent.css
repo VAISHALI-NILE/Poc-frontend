@@ -1,0 +1,230 @@
+/* Importing Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@300;600&display=swap");
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #eaecee; /* Soft grey background */
+  margin: 0;
+  padding: 0;
+  color: #505a5f; /* Medium grey for text */
+}
+
+.search-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #ffffff; /* White background for cards */
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #374b73; /* Deep blue for title */
+  font-weight: 600;
+  font-size: 2.5em;
+  letter-spacing: 1px;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #f7c331; /* Gold for input border */
+  border-radius: 40px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  font-size: 1.2em;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 4px 12px rgba(55, 75, 115, 0.3); /* Blue glow for focus */
+}
+
+.search-button {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  background-color: #374b73; /* Deep blue for buttons */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #f7c331; /* Gold for button hover */
+  transform: scale(1.05);
+}
+
+.filter-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.filter-container label {
+  margin: 0 20px;
+  font-weight: 600;
+  color: #505a5f; /* Medium grey for labels */
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  margin-right: 8px;
+}
+
+.results-container {
+  background: #ffffff; /* White background for results */
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.results-title {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: #374b73; /* Deep blue for result titles */
+  border-bottom: 2px solid #f7c331; /* Gold underline */
+  padding-bottom: 10px;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.result-card {
+  background-color: #ffffff; /* White background for cards */
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+}
+
+.result-card:hover {
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.result-image {
+  width: 100%;
+  border-radius: 12px;
+  height: 180px;
+  object-fit: cover;
+}
+
+.result-title {
+  font-size: 1.2em;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  color: #374b73; /* Deep blue for titles */
+  font-weight: 600;
+}
+
+.anker-tag {
+  text-decoration: none;
+  color: inherit;
+}
+
+.description {
+  color: #505a5f; /* Medium grey for descriptions */
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+.result-info {
+  font-size: 0.9em;
+  color: #888; /* Lighter grey for secondary info */
+}
+
+.pagination-controls {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.pagination-controls button {
+  background-color: #374b73; /* Deep blue for buttons */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px;
+  cursor: pointer;
+  margin: 0 10px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-size: 1em;
+  width: 100px;
+}
+
+.pagination-controls button:hover {
+  background-color: #f7c331; /* Gold for hover */
+  transform: scale(1.05);
+}
+
+.pagination-controls button:disabled {
+  background-color: #eaecee; /* Light grey for disabled buttons */
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #c96868; /* Muted red for error messages (unchanged) */
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.2em;
+}
+
+.loading-spinner {
+  border: 8px solid #eaecee; /* Soft grey for spinner */
+  border-top: 8px solid #374b73; /* Deep blue for spinner */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 30px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.filter-container label i {
+  margin-right: 8px;
+  color: #374b73; /* Icon color to match the theme */
+}
+.pagination-controls button i {
+  margin: 0 5px;
+}
+.load-more-button {
+  border: none;
+  background-color: #f7c331;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+  margin: 20px 0;
+}
+
+.load-more-button:hover {
+  background-color: #f0c347;
+}
