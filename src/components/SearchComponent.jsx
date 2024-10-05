@@ -38,68 +38,116 @@ const SearchComponent = () => {
     setLoading(true);
 
     try {
-      const videoResponse =
-        filter === "all" || filter === "videos"
-          ? await axios.get(
-              `https://poc-backend-waps.onrender.com/search?q=${query}&pageToken=${pageInfo.videoPageToken}`
-            )
-          : { data: { youtube: [] } };
+      const requests = [
+        axios
+          .get(
+            `https://poc-backend-waps.onrender.com/search?q=${query}&pageToken=${pageInfo.videoPageToken}`
+          )
+          .then((response) => ({
+            key: "videos",
+            data: response.data.youtube || [],
+            error: null,
+          }))
+          .catch((err) => ({
+            key: "videos",
+            data: [],
+            error: err.message,
+          })),
 
-      const articleResponse =
-        filter === "all" || filter === "articles"
-          ? await axios.get(
-              `https://poc-backend-waps.onrender.com/articles?q=${query}&start=${pageInfo.articleStartIndex}`
-            )
-          : { data: { articles: [] } };
+        axios
+          .get(
+            `https://poc-backend-waps.onrender.com/articles?q=${query}&start=${pageInfo.articleStartIndex}`
+          )
+          .then((response) => ({
+            key: "articles",
+            data: response.data.articles || [],
+            error: null,
+          }))
+          .catch((err) => ({
+            key: "articles",
+            data: [],
+            error: err.message,
+          })),
 
-      const paperResponse =
-        filter === "all" || filter === "papers"
-          ? await axios.get(
-              `https://poc-backend-waps.onrender.com/papers?q=${query}&page=${pageInfo.paperPage}`
-            )
-          : { data: { papers: [] } };
+        axios
+          .get(
+            `https://poc-backend-waps.onrender.com/papers?q=${query}&page=${pageInfo.paperPage}`
+          )
+          .then((response) => ({
+            key: "papers",
+            data: response.data.papers || [],
+            error: null,
+          }))
+          .catch((err) => ({
+            key: "papers",
+            data: [],
+            error: err.message,
+          })),
 
-      const blogResponse =
-        filter === "all" || filter === "blogs"
-          ? await axios.get(
-              `https://poc-backend-waps.onrender.com/blogs?q=${query}&start=${pageInfo.blogStartIndex}`
-            )
-          : { data: { blogs: [] } };
+        axios
+          .get(
+            `https://poc-backend-waps.onrender.com/blogs?q=${query}&start=${pageInfo.blogStartIndex}`
+          )
+          .then((response) => ({
+            key: "blogs",
+            data: response.data.blogs || [],
+            error: null,
+          }))
+          .catch((err) => ({
+            key: "blogs",
+            data: [],
+            error: err.message,
+          })),
+      ];
 
-      setResults({
-        videos: videoResponse.data.youtube || [],
-        articles: articleResponse.data.articles || [],
-        papers: paperResponse.data.papers || [],
-        blogs: blogResponse.data.blogs || [],
+      // Wait for all promises to settle (either resolved or rejected)
+      const resultsArray = await Promise.allSettled(requests);
+
+      const updatedResults = {
+        videos: [],
+        articles: [],
+        papers: [],
+        blogs: [],
+      };
+
+      resultsArray.forEach((result) => {
+        if (result.status === "fulfilled") {
+          updatedResults[result.value.key] = result.value.data;
+        } else {
+          console.error(`Error fetching ${result.value.key}:`, result.reason);
+          setError(`Error fetching ${result.value.key}: ${result.reason}`);
+        }
       });
 
-      setPageInfo({
-        videoPageToken: videoResponse.data.nextPageToken || "",
-        articleStartIndex:
-          articleResponse.data.articles.length + pageInfo.articleStartIndex,
-        paperPage: pageInfo.paperPage + 1,
-        blogStartIndex:
-          blogResponse.data.blogs.length + pageInfo.blogStartIndex,
-      });
+      // Update the results with successful responses
+      setResults(updatedResults);
 
-      // Check if there are no results
+      // Update pagination info based on successful responses
+      setPageInfo((prev) => ({
+        videoPageToken: updatedResults.videos.length
+          ? pageInfo.videoPageToken
+          : "",
+        articleStartIndex: updatedResults.articles.length
+          ? updatedResults.articles.length + prev.articleStartIndex
+          : prev.articleStartIndex,
+        paperPage: prev.paperPage + (updatedResults.papers.length > 0 ? 1 : 0),
+        blogStartIndex: updatedResults.blogs.length
+          ? updatedResults.blogs.length + prev.blogStartIndex
+          : prev.blogStartIndex,
+      }));
+
+      // If all results are empty, show a general error message
       if (
-        !videoResponse.data.youtube.length &&
-        !articleResponse.data.articles.length &&
-        !paperResponse.data.papers.length &&
-        !blogResponse.data.blogs.length
+        updatedResults.videos.length === 0 &&
+        updatedResults.articles.length === 0 &&
+        updatedResults.papers.length === 0 &&
+        updatedResults.blogs.length === 0
       ) {
         setError("No results found. Please try a different query.");
       }
     } catch (error) {
       console.error("Error fetching data", error);
       setError("There was an error fetching data. Please try again.");
-      setResults({
-        videos: [],
-        articles: [],
-        papers: [],
-        blogs: [],
-      });
     } finally {
       setLoading(false);
     }
@@ -111,7 +159,7 @@ const SearchComponent = () => {
     try {
       if (filter === "all" || filter === "videos") {
         const videoResponse = await axios.get(
-          `https://poc-backend-waps.onrender.com/search?q=${query}&pageToken=${pageInfo.videoPageToken}`
+          `http://localhost:3000/search?q=${query}&pageToken=${pageInfo.videoPageToken}`
         );
         setResults((prevResults) => ({
           ...prevResults,
@@ -128,7 +176,7 @@ const SearchComponent = () => {
 
       if (filter === "all" || filter === "articles") {
         const articleResponse = await axios.get(
-          `https://poc-backend-waps.onrender.com/articles?q=${query}&start=${pageInfo.articleStartIndex}`
+          `http://localhost:3000/articles?q=${query}&start=${pageInfo.articleStartIndex}`
         );
         setResults((prevResults) => ({
           ...prevResults,
@@ -147,7 +195,7 @@ const SearchComponent = () => {
 
       if (filter === "all" || filter === "papers") {
         const paperResponse = await axios.get(
-          `https://poc-backend-waps.onrender.com/papers?q=${query}&page=${pageInfo.paperPage}`
+          `http://localhost:3000/papers?q=${query}&page=${pageInfo.paperPage}`
         );
         setResults((prevResults) => ({
           ...prevResults,
@@ -161,7 +209,7 @@ const SearchComponent = () => {
 
       if (filter === "all" || filter === "blogs") {
         const blogResponse = await axios.get(
-          `https://poc-backend-waps.onrender.com/blogs?q=${query}&start=${pageInfo.blogStartIndex}`
+          `http://localhost:3000/blogs?q=${query}&start=${pageInfo.blogStartIndex}`
         );
         setResults((prevResults) => ({
           ...prevResults,
