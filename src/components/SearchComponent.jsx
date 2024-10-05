@@ -9,6 +9,7 @@ import {
   FaBook,
   FaBlog,
   FaGlobe,
+  FaTimes,
 } from "react-icons/fa";
 
 import "./SearchComponent.css";
@@ -22,23 +23,21 @@ const SearchComponent = () => {
     papers: [],
     blogs: [],
   });
-  const [error, setError] = useState(""); // State to manage error messages
+  const [error, setError] = useState("");
   const [pageInfo, setPageInfo] = useState({
-    // State for pagination info
     videoPageToken: "",
     articleStartIndex: 1,
     paperPage: 1,
     blogStartIndex: 1,
   });
-  const [loading, setLoading] = useState(false); // State to manage loading status
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error state before searching
-    setLoading(true); // Set loading state to true
+    setError("");
+    setLoading(true);
 
     try {
-      // Fetch videos
       const videoResponse =
         filter === "all" || filter === "videos"
           ? await axios.get(
@@ -46,7 +45,6 @@ const SearchComponent = () => {
             )
           : { data: { youtube: [] } };
 
-      // Fetch articles
       const articleResponse =
         filter === "all" || filter === "articles"
           ? await axios.get(
@@ -54,7 +52,6 @@ const SearchComponent = () => {
             )
           : { data: { articles: [] } };
 
-      // Fetch academic papers
       const paperResponse =
         filter === "all" || filter === "papers"
           ? await axios.get(
@@ -62,7 +59,6 @@ const SearchComponent = () => {
             )
           : { data: { papers: [] } };
 
-      // Fetch blog posts
       const blogResponse =
         filter === "all" || filter === "blogs"
           ? await axios.get(
@@ -70,7 +66,6 @@ const SearchComponent = () => {
             )
           : { data: { blogs: [] } };
 
-      // Set results
       setResults({
         videos: videoResponse.data.youtube || [],
         articles: articleResponse.data.articles || [],
@@ -78,7 +73,6 @@ const SearchComponent = () => {
         blogs: blogResponse.data.blogs || [],
       });
 
-      // Update pagination info
       setPageInfo({
         videoPageToken: videoResponse.data.nextPageToken || "",
         articleStartIndex:
@@ -87,19 +81,34 @@ const SearchComponent = () => {
         blogStartIndex:
           blogResponse.data.blogs.length + pageInfo.blogStartIndex,
       });
+
+      // Check if there are no results
+      if (
+        !videoResponse.data.youtube.length &&
+        !articleResponse.data.articles.length &&
+        !paperResponse.data.papers.length &&
+        !blogResponse.data.blogs.length
+      ) {
+        setError("No results found. Please try a different query.");
+      }
     } catch (error) {
       console.error("Error fetching data", error);
-      setError("There was an error fetching data. Please try again."); // Set error message for UI
+      setError("There was an error fetching data. Please try again.");
+      setResults({
+        videos: [],
+        articles: [],
+        papers: [],
+        blogs: [],
+      });
     } finally {
-      setLoading(false); // Set loading state to false
+      setLoading(false);
     }
   };
 
   const loadMoreResults = async () => {
-    setLoading(true); // Set loading state to true
+    setLoading(true);
 
     try {
-      // Fetch more videos if needed
       if (filter === "all" || filter === "videos") {
         const videoResponse = await axios.get(
           `https://poc-backend-waps.onrender.com/search?q=${query}&pageToken=${pageInfo.videoPageToken}`
@@ -117,7 +126,6 @@ const SearchComponent = () => {
         }));
       }
 
-      // Fetch more articles if needed
       if (filter === "all" || filter === "articles") {
         const articleResponse = await axios.get(
           `https://poc-backend-waps.onrender.com/articles?q=${query}&start=${pageInfo.articleStartIndex}`
@@ -137,7 +145,6 @@ const SearchComponent = () => {
         }));
       }
 
-      // Fetch more academic papers if needed
       if (filter === "all" || filter === "papers") {
         const paperResponse = await axios.get(
           `https://poc-backend-waps.onrender.com/papers?q=${query}&page=${pageInfo.paperPage}`
@@ -152,7 +159,6 @@ const SearchComponent = () => {
         }));
       }
 
-      // Fetch more blog posts if needed
       if (filter === "all" || filter === "blogs") {
         const blogResponse = await axios.get(
           `https://poc-backend-waps.onrender.com/blogs?q=${query}&start=${pageInfo.blogStartIndex}`
@@ -169,10 +175,27 @@ const SearchComponent = () => {
       }
     } catch (error) {
       console.error("Error fetching more data", error);
-      setError("There was an error fetching more data. Please try again."); // Set error message for UI
+      setError("There was an error fetching more data. Please try again.");
     } finally {
-      setLoading(false); // Set loading state to false
+      setLoading(false);
     }
+  };
+
+  const clearSearch = () => {
+    setQuery("");
+    setResults({
+      videos: [],
+      articles: [],
+      papers: [],
+      blogs: [],
+    });
+    setError("");
+    setPageInfo({
+      videoPageToken: "",
+      articleStartIndex: 1,
+      paperPage: 1,
+      blogStartIndex: 1,
+    });
   };
 
   return (
@@ -189,10 +212,14 @@ const SearchComponent = () => {
         <button type="submit" className="search-button">
           <FaSearch />
         </button>
+
+        <button type="button" onClick={clearSearch} className="clear-button">
+          <FaTimes />
+        </button>
       </form>
       <div className="filter-container">
         <label>
-          <FaGlobe /> {/* Icon for "All" */}
+          <FaGlobe />
           <input
             type="radio"
             value="all"
@@ -202,7 +229,7 @@ const SearchComponent = () => {
           All
         </label>
         <label>
-          <FaVideo /> {/* Icon for videos */}
+          <FaVideo />
           <input
             type="radio"
             value="videos"
@@ -212,7 +239,7 @@ const SearchComponent = () => {
           Videos
         </label>
         <label>
-          <FaNewspaper /> {/* Icon for articles */}
+          <FaNewspaper />
           <input
             type="radio"
             value="articles"
@@ -222,7 +249,7 @@ const SearchComponent = () => {
           Articles
         </label>
         <label>
-          <FaBook /> {/* Icon for papers */}
+          <FaBook />
           <input
             type="radio"
             value="papers"
@@ -232,7 +259,7 @@ const SearchComponent = () => {
           Academic Papers
         </label>
         <label>
-          <FaBlog /> {/* Icon for blogs */}
+          <FaBlog />
           <input
             type="radio"
             value="blogs"
@@ -242,12 +269,10 @@ const SearchComponent = () => {
           Blogs
         </label>
       </div>
-      {error && <p className="error-message">{error}</p>}{" "}
-      {/* Display error messages */}
+      {error && <p className="error-message">{error}</p>}
       <div className="results-container">
-        {loading && <div className="loading-spinner"></div>}{" "}
-        {/* Show loading spinner */}
-        {(filter === "all" || filter === "videos") && query ? (
+        {loading && <div className="loading-spinner"></div>}
+        {filter === "all" || filter === "videos" ? (
           <>
             <h2 className="results-title">Videos</h2>
             <div className="results-grid">
@@ -268,20 +293,22 @@ const SearchComponent = () => {
                       alt={video.title}
                       className="result-image"
                     />
-
                     <h3 className="result-title">{video.title}</h3>
-                    {video.views !== 0 ? (
+                    {video.views !== 0 && (
                       <p className="result-info">
-                        <FaThumbsUp /> {video.likes}| <FaEye /> {video.views}
+                        <FaThumbsUp /> {video.likes} | <FaEye /> {video.views}
                       </p>
-                    ) : null}
+                    )}
                   </a>
                 </div>
               ))}
+              {results.videos.length === 0 && !loading && (
+                <p>No videos found.</p>
+              )}
             </div>
           </>
         ) : null}
-        {(filter === "all" || filter === "articles") && query ? (
+        {filter === "all" || filter === "articles" ? (
           <>
             <h2 className="results-title">Articles</h2>
             <div className="results-grid">
@@ -301,10 +328,13 @@ const SearchComponent = () => {
                   </a>
                 </div>
               ))}
+              {results.articles.length === 0 && !loading && (
+                <p>No articles found.</p>
+              )}
             </div>
           </>
         ) : null}
-        {(filter === "all" || filter === "papers") && query ? (
+        {filter === "all" || filter === "papers" ? (
           <>
             <h2 className="results-title">Academic Papers</h2>
             <div className="results-grid">
@@ -323,10 +353,13 @@ const SearchComponent = () => {
                   </a>
                 </div>
               ))}
+              {results.papers.length === 0 && !loading && (
+                <p>No academic papers found.</p>
+              )}
             </div>
           </>
         ) : null}
-        {(filter === "all" || filter === "blogs") && query ? (
+        {filter === "all" || filter === "blogs" ? (
           <>
             <h2 className="results-title">Blogs</h2>
             <div className="results-grid">
@@ -347,7 +380,6 @@ const SearchComponent = () => {
                       alt={blog.title || "Blog post image"}
                       className="result-image"
                     />
-
                     <h3 className="result-title">{blog.title}</h3>
                     {blog.snippet && (
                       <p className="result-info">{blog.snippet}</p>
@@ -355,12 +387,17 @@ const SearchComponent = () => {
                   </a>
                 </div>
               ))}
+              {results.blogs.length === 0 && !loading && <p>No blogs found.</p>}
             </div>
           </>
         ) : null}
       </div>
-      <button onClick={loadMoreResults} className="load-more-button">
-        Load More
+      <button
+        onClick={loadMoreResults}
+        className="load-more-button"
+        disabled={loading}
+      >
+        {loading ? "Loading..." : "Load More"}
       </button>
     </div>
   );

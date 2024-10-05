@@ -10,7 +10,7 @@ body {
 }
 
 .search-container {
-  max-width: 900px;
+  max-width: 90vw;
   margin: 40px auto;
   padding: 20px;
   background-color: #ffffff; /* White background for cards */
@@ -35,7 +35,7 @@ body {
 }
 
 .search-input {
-  width: 100%;
+  width: 80%;
   padding: 16px;
   border: 2px solid #f7c331; /* Gold for input border */
   border-radius: 40px;
@@ -51,8 +51,8 @@ body {
 
 .search-button {
   position: absolute;
-  right: 10px;
-  top: 8px;
+  right: 50px;
+  top: 6px;
   background-color: #374b73; /* Deep blue for buttons */
   color: white;
   border: none;
@@ -227,4 +227,16 @@ input[type="radio"] {
 
 .load-more-button:hover {
   background-color: #f0c347;
+}
+.clear-button {
+  position: absolute;
+  right: 5px;
+  top: 6px;
+  background-color: #733737; /* Deep blue for buttons */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
